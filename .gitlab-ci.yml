@@ -2,7 +2,7 @@ image: docker:latest
 
 variables:
   DOCKER_DRIVER: overlay2
-  NAMESPACE: edbizarro/gitlab-ci-pipeline-php
+  NAMESPACE: vongola12324/gitlab-ci-pipeline-laravel
 
 services:
   - docker:dind
@@ -10,28 +10,7 @@ services:
 before_script:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
 
-debian:7.1:
-  stage: build
-  variables:
-    IMAGE_VERSION: "7.1"
-  script:
-    - docker build --compress --cache-from $NAMESPACE:$IMAGE_VERSION -t $NAMESPACE:$IMAGE_VERSION -f php/7.1/Dockerfile .
-    - docker run -t --rm -v $(pwd):/var/www/html edbizarro/gitlab-ci-pipeline-php:$IMAGE_VERSION goss v
-    - docker tag $NAMESPACE:$IMAGE_VERSION $NAMESPACE:latest
-    - docker tag $NAMESPACE:$IMAGE_VERSION $NAMESPACE:7
-    - docker push $NAMESPACE:7
-    - docker push $NAMESPACE:$IMAGE_VERSION
-    - docker push $NAMESPACE:latest
-
-debian:7.0:
-  stage: build
-  variables:
-    IMAGE_VERSION: "7.0"
-  script:
-    - docker build --compress --cache-from $NAMESPACE:$IMAGE_VERSION -t $NAMESPACE:$IMAGE_VERSION -f php/7.0/Dockerfile .
-    - docker run -t --rm -v $(pwd):/var/www/html $NAMESPACE:$IMAGE_VERSION goss v
-    - docker push $NAMESPACE:$IMAGE_VERSION
-
+# PHP 5.6
 debian:5.6:
   stage: build
   script:
@@ -39,30 +18,22 @@ debian:5.6:
     # - 'if docker run -t --rm edbizarro/gitlab-ci-pipeline-php:5.6 php -v | grep "PHP 5.6"; then return 0; else return 1; fi'
     - docker push $NAMESPACE:5.6
 
-alpine:7.1:
-  stage: build
-  variables:
-    IMAGE_VERSION: "7.1-alpine"
-  script:
-    - docker build --compress --cache-from $NAMESPACE:$IMAGE_VERSION -t $NAMESPACE:$IMAGE_VERSION -f php/7.1/alpine/Dockerfile .
-    - docker run -t --rm -v $(pwd):/var/www/html $NAMESPACE:$IMAGE_VERSION goss v
-    - docker push $NAMESPACE:$IMAGE_VERSION
-
-alpine:7.0:
-  stage: build
-  variables:
-    IMAGE_VERSION: "7.0-alpine"
-  script:
-    - docker build --compress --cache-from $NAMESPACE:$IMAGE_VERSION -t $NAMESPACE:$IMAGE_VERSION -f php/7.0/alpine/Dockerfile .
-    - docker run -t --rm -v $(pwd):/var/www/html $NAMESPACE:$IMAGE_VERSION goss v
-    - docker push $NAMESPACE:$IMAGE_VERSION
-
 fpm:5.6:
   stage: build
   variables:
     IMAGE_VERSION: "5.6-fpm"
   script:
     - docker build --compress --cache-from $NAMESPACE:$IMAGE_VERSION -t $NAMESPACE:$IMAGE_VERSION -f php/5.6/fpm/Dockerfile .
+    - docker run -t --rm -v $(pwd):/var/www/html $NAMESPACE:$IMAGE_VERSION goss v
+    - docker push $NAMESPACE:$IMAGE_VERSION
+
+# PHP 7.0
+debian:7.0:
+  stage: build
+  variables:
+    IMAGE_VERSION: "7.0"
+  script:
+    - docker build --compress --cache-from $NAMESPACE:$IMAGE_VERSION -t $NAMESPACE:$IMAGE_VERSION -f php/7.0/Dockerfile .
     - docker run -t --rm -v $(pwd):/var/www/html $NAMESPACE:$IMAGE_VERSION goss v
     - docker push $NAMESPACE:$IMAGE_VERSION
 
@@ -75,6 +46,27 @@ fpm:7.0:
     - docker run -t --rm -v $(pwd):/var/www/html $NAMESPACE:$IMAGE_VERSION goss v
     - docker push $NAMESPACE:$IMAGE_VERSION
 
+alpine:7.0:
+  stage: build
+  variables:
+    IMAGE_VERSION: "7.0-alpine"
+  script:
+    - docker build --compress --cache-from $NAMESPACE:$IMAGE_VERSION -t $NAMESPACE:$IMAGE_VERSION -f php/7.0/alpine/Dockerfile .
+    - docker run -t --rm -v $(pwd):/var/www/html $NAMESPACE:$IMAGE_VERSION goss v
+    - docker push $NAMESPACE:$IMAGE_VERSION
+
+# PHP 7.1
+debian:7.1:
+  stage: build
+  variables:
+    IMAGE_VERSION: "7.1"
+  script:
+    - docker build --compress --cache-from $NAMESPACE:$IMAGE_VERSION -t $NAMESPACE:$IMAGE_VERSION -f php/7.1/Dockerfile .
+    - docker run -t --rm -v $(pwd):/var/www/html edbizarro/gitlab-ci-pipeline-php:$IMAGE_VERSION goss v
+    - docker tag $NAMESPACE:$IMAGE_VERSION $NAMESPACE:latest
+    - docker push $NAMESPACE:$IMAGE_VERSION
+    - docker push $NAMESPACE:$latest
+
 fpm:7.1:
   stage: build
   variables:
@@ -82,6 +74,39 @@ fpm:7.1:
   script:
     - docker build --compress --cache-from $NAMESPACE:$IMAGE_VERSION -t $NAMESPACE:$IMAGE_VERSION -f php/7.1/fpm/Dockerfile .
     - docker run -t --rm -v $(pwd):/var/www/html $NAMESPACE:$IMAGE_VERSION goss v
-    - docker tag $NAMESPACE:$IMAGE_VERSION $NAMESPACE:fpm
+    - docker tag $NAMESPACE:$IMAGE_VERSION $NAMESPACE:latest-fpm
     - docker push $NAMESPACE:$IMAGE_VERSION
-    - docker push $NAMESPACE:fpm
+    - docker push $NAMESPACE:$latest-fpm
+
+alpine:7.1:
+  stage: build
+  variables:
+    IMAGE_VERSION: "7.1-alpine"
+  script:
+    - docker build --compress --cache-from $NAMESPACE:$IMAGE_VERSION -t $NAMESPACE:$IMAGE_VERSION -f php/7.1/alpine/Dockerfile .
+    - docker run -t --rm -v $(pwd):/var/www/html $NAMESPACE:$IMAGE_VERSION goss v
+    - docker tag $NAMESPACE:$IMAGE_VERSION $NAMESPACE:latest-alpine
+    - docker push $NAMESPACE:$IMAGE_VERSION
+    - docker push $NAMESPACE:$latest-alpine
+
+# PHP 7.2
+debian:7.2:
+  stage: build
+  variables:
+    IMAGE_VERSION: "7.2"
+  script:
+    - docker build --compress --cache-from $NAMESPACE:$IMAGE_VERSION -t $NAMESPACE:$IMAGE_VERSION -f php/7.2/Dockerfile .
+    - docker run -t --rm -v $(pwd):/var/www/html edbizarro/gitlab-ci-pipeline-php:$IMAGE_VERSION goss v
+    - docker tag $NAMESPACE:$IMAGE_VERSION $NAMESPACE:beta
+    - docker push $NAMESPACE:$IMAGE_VERSION
+    - docker push $NAMESPACE:$beta
+fpm:7.2:
+  stage: build
+  variables:
+    IMAGE_VERSION: "7.2-fpm"
+  script:
+    - docker build --compress --cache-from $NAMESPACE:$IMAGE_VERSION -t $NAMESPACE:$IMAGE_VERSION -f php/7.2/fpm/Dockerfile .
+    - docker run -t --rm -v $(pwd):/var/www/html $NAMESPACE:$IMAGE_VERSION goss v
+    - docker tag $NAMESPACE:$IMAGE_VERSION $NAMESPACE:beta-fpm
+    - docker push $NAMESPACE:$IMAGE_VERSION
+    - docker push $NAMESPACE:$beta-fpm
