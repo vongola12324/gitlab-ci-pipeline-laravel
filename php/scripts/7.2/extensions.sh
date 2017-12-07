@@ -2,13 +2,14 @@
 
 apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -yqq \
     bzip2 \
+    gnupg \
     libbz2-dev \
     libcurl4-gnutls-dev \
     libfreetype6-dev \
     libgmp-dev \
     libicu-dev \
     libjpeg62-turbo-dev \
-    libpng12-dev \
+    libpng-dev \
     libpq-dev \
     libssl-dev \
     libxml2-dev \
